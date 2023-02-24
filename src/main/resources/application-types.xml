@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="json" format="json">
+      <types:shape format="weave" example="examples/playeroutput.json"><![CDATA[%dw 2.0
+
+type json = Array<{|  player_id_t: Number {"typeId": "int"},   player_name_t: String,   country: String,   total_matches_t: Number {"typeId": "int"},   total_runs_t: Number {"typeId": "int"},   total_wickets_t: Number {"typeId": "int"},   player_status_t: Number {"typeId": "int"}|}> {"example": "[{\\\"player_id_t\\\":123,\\\"player_name_t\\\":\\\"dfgdf\\\",\\\"country\\\":\\\"affs\\\",\\\"total_matches_t\\\":456,\\\"total_runs_t\\\":345,\\\"total_wickets_t\\\":456,\\\"player_status_t\\\":456},{\\\"player_id_t\\\":123,\\\"player_name_t\\\":\\\"adf\\\",\\\"country\\\":\\\"safd\\\",\\\"total_matches_t\\\":456,\\\"total_runs_t\\\":345,\\\"total_wickets_t\\\":456,\\\"player_status_t\\\":456}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#18919b0d-2fd2-4f1a-b729-7f46360e5c76">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

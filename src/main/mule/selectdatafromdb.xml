@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="428a1c5d-fb58-4d15-b114-cd2681dd91a8" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Mymomanddad@123" database="task" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6a2e7c17-e2ce-441f-a74c-de7bd68baaed" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="458f0b5c-ac14-412a-8438-e1c87f1e712b" />
+	<flow name="selectdatafromdbFlow" doc:id="7bc4108c-d986-4b9a-9d54-b9a3a93e39f0" >
+		<http:listener doc:name="Listener" doc:id="0018f19c-15a6-40d0-b8d8-53b35955cd0a" config-ref="HTTP_Listener_config" path="/get"/>
+		<set-variable value="#[attributes.queryParams.choice]" doc:name="Set Variable" doc:id="159ea91e-ef87-46d1-b904-f1b64ca13e2b" variableName="choice"/>
+		<set-variable value='#["implemented"]' doc:name="Set Variable" doc:id="384ed651-59be-4349-bbad-cbfad9d26dc8" variableName="varA"/>
+		<choice doc:name="Choice" doc:id="e2fa4c21-7ed0-4ec0-8767-17407021e4d9" >
+			<when expression='#[vars.choice=="1"]'>
+				<set-payload value='#["choic router " ++ vars.varA]' doc:name="Set Payload" doc:id="f41240fd-108f-445c-9cb4-2dcb38af66c1" />
+			</when>
+			<otherwise >
+				<db:select doc:id="502cdedc-8395-4fc2-a374-fbb0ac1eace9" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT * FROM cricketplayers]]></db:sql>
+		</db:select>
+				<ee:transform doc:name="Transform Message" doc:id="18919b0d-2fd2-4f1a-b729-7f46360e5c76">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/csv
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	player_id_t: payload01.playerid,
+	player_name_t: payload01.playername default "",
+	country: payload01.country default "",
+	total_runs_t: payload01.total_runs default 0,
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<file:write doc:name="Write" doc:id="1fbd21f4-a758-486e-b051-f8633485b7ea" config-ref="File_Config" path="C:\Users\gunde\OneDrive\Desktop\mulesoft curse\task\1\writecrickey players.xlsx" />
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="811466c5-8115-4690-a8fa-a21f0788149c" type="FILE:ACCESS_DENIED, FILE:CONNECTIVITY, FILE:FILE_ALREADY_EXISTS, FILE:FILE_LOCK, FILE:ILLEGAL_CONTENT, FILE:ILLEGAL_PATH, FILE:RETRY_EXHAUSTED">
+				<logger level="INFO" doc:name="Logger" doc:id="ef332c86-4647-41ce-a956-975c42cef4a1" message='#["unable to create"]'/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
