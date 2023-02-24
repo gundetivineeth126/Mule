@@ -1,0 +1,20 @@
+[
+{
+"player_id_t" : 123 ,
+"player_name_t" : "dfgdf" ,
+"country" : "affs" ,
+"total_matches_t" : 456 ,
+"total_runs_t" : 345 ,
+"total_wickets_t" : 456 ,
+"player_status_t" : 456
+},
+{
+"player_id_t" : 123 ,
+"player_name_t" : "adf" ,
+"country" : "safd" ,
+"total_matches_t" : 456 ,
+"total_runs_t" : 345 ,
+"total_wickets_t" : 456 ,
+"player_status_t" : 456
+}
+]
